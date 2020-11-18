@@ -168,7 +168,7 @@ class PoseResNet(nn.Module):
 
         self.final_layer = nn.Conv2d(
             in_channels=extra.NUM_DECONV_FILTERS[-1],
-            out_channels=cfg.MODEL.NUM_JOINTS,
+            out_channels=cfg.MODEL.NUM_JOINTS * (2 if cfg.MODEL.USE_BRANCH else 1),
             kernel_size=extra.FINAL_CONV_KERNEL,
             stride=1,
             padding=1 if extra.FINAL_CONV_KERNEL == 3 else 0

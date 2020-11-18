@@ -45,8 +45,8 @@ class CrowdPoseDataset(JointsDataset):
         13'neck'],
 	'skeleton': [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12], [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11]]
     '''
-    def __init__(self, cfg, root, image_set, is_train, transform=None):
-        super().__init__(cfg, root, image_set, is_train, transform)
+    def __init__(self, cfg, root, image_set, is_train, transform=None, use_brance=False):
+        super().__init__(cfg, root, image_set, is_train, transform, use_brance)
         self.nms_thre = cfg.TEST.NMS_THRE
         self.image_thre = cfg.TEST.IMAGE_THRE
         self.oks_thre = cfg.TEST.OKS_THRE
@@ -81,6 +81,7 @@ class CrowdPoseDataset(JointsDataset):
         self.parent_ids = None
 
         self.db = self._get_db()
+        self.use_branch = use_brance
 
         if is_train and cfg.DATASET.SELECT_DATA:
             self.db = self.select_data(self.db)
@@ -163,7 +164,7 @@ class CrowdPoseDataset(JointsDataset):
                 joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
                 joints_3d[ipt, 2] = 0
                 t_vis = obj['keypoints'][ipt * 3 + 2]
-                if t_vis > 1:
+                if not self.use_branch and t_vis > 1:
                     t_vis = 1
                 joints_3d_vis[ipt, 0] = t_vis
                 joints_3d_vis[ipt, 1] = t_vis

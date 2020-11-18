@@ -147,6 +147,9 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             s = meta['scale'].numpy()
             score = meta['score'].numpy()
 
+            if config.MODEL.USE_BRANCH:
+                output = output[:, :config.MODEL.NUM_JOINTS, 0:2] + \
+                         output[:, config.MODEL.NUM_JOINTS:, 0:2]
             preds, maxvals = get_final_preds(
                 config, output.clone().cpu().numpy(), c, s)
 

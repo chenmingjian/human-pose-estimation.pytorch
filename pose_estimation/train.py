@@ -136,7 +136,8 @@ def main():
         transforms.Compose([
             transforms.ToTensor(),
             normalize,
-        ])
+            ]),
+        True
     )
     valid_dataset = eval('dataset.'+config.DATASET.DATASET)(
         config,

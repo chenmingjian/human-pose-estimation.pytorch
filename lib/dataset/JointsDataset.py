@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 class JointsDataset(Dataset):
-    def __init__(self, cfg, root, image_set, is_train, transform=None):
+    def __init__(self, cfg, root, image_set, is_train, transform=None, use_branch=False):
         self.num_joints = 0
         self.pixel_std = 200
         self.flip_pairs = []
@@ -50,6 +50,8 @@ class JointsDataset(Dataset):
 
         self.transform = transform
         self.db = []
+
+        self.use_branch = use_branch
 
     def _get_db(self):
         raise NotImplementedError
@@ -179,7 +181,7 @@ class JointsDataset(Dataset):
             'Only support gaussian map now!'
 
         if self.target_type == 'gaussian':
-            target = np.zeros((self.num_joints,
+            target = np.zeros((self.num_joints * (2 if self.use_branch else 2),
                                self.heatmap_size[1],
                                self.heatmap_size[0]),
                               dtype=np.float32)
@@ -215,8 +217,11 @@ class JointsDataset(Dataset):
                 img_y = max(0, ul[1]), min(br[1], self.heatmap_size[1])
 
                 v = target_weight[joint_id]
-                if v > 0.5:
+                if v == 2 or (not self.use_branch and v > 0.5):
                     target[joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
+                        g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
+                elif v == 1:
+                    target[self.num_joints + joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
                         g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
 
         return target, target_weight
