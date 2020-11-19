@@ -29,7 +29,7 @@ def flip_back(output_flipped, matched_parts):
     return output_flipped
 
 
-def fliplr_joints(joints, joints_vis, width, matched_parts):
+def fliplr_joints(joints, joints_vis, width, matched_parts, joints_vis_full=None):
     """
     flip coords
     """
@@ -41,7 +41,12 @@ def fliplr_joints(joints, joints_vis, width, matched_parts):
         joints[pair[0], :], joints[pair[1], :] = \
             joints[pair[1], :], joints[pair[0], :].copy()
         joints_vis[pair[0], :], joints_vis[pair[1], :] = \
-            joints_vis[pair[1], :], joints_vis[pair[0], :].copy()
+            joints_vis[pair[1], :], joints_vis[pair[0], :].copy()    
+        try:
+            joints_vis_full[pair[0], :], joints_vis_full[pair[1], :] = \
+                joints_vis_full[pair[1], :], joints_vis_full[pair[0], :].copy()
+        except TypeError:
+            pass
 
     return joints*joints_vis, joints_vis
 

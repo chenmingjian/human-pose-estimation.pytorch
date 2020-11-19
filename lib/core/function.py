@@ -127,9 +127,9 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
 
                 output = (output + output_flipped) * 0.5
 
-            target = target.cuda(non_blocking=True)
-            target_weight = target_weight.cuda(non_blocking=True)
-
+            target = target.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
+            target_weight = target_weight.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
+            
             loss = criterion(output, target, target_weight)
 
             num_images = input.size(0)

@@ -159,12 +159,17 @@ class CrowdPoseDataset(JointsDataset):
 
             joints_3d = np.zeros((self.num_joints, 3), dtype=np.float)
             joints_3d_vis = np.zeros((self.num_joints, 3), dtype=np.float)
+            joints_3d_vis_full = np.zeros((self.num_joints, 3), dtype=np.float)
             for ipt in range(self.num_joints):
                 joints_3d[ipt, 0] = obj['keypoints'][ipt * 3 + 0]
                 joints_3d[ipt, 1] = obj['keypoints'][ipt * 3 + 1]
                 joints_3d[ipt, 2] = 0
                 t_vis = obj['keypoints'][ipt * 3 + 2]
-                if not self.use_branch and t_vis > 1:
+                if self.use_branch:
+                    joints_3d_vis_full[ipt, 0] = t_vis
+                    joints_3d_vis_full[ipt, 1] = t_vis
+                    joints_3d_vis_full[ipt, 2] = 0
+                if t_vis > 0.5:
                     t_vis = 1
                 joints_3d_vis[ipt, 0] = t_vis
                 joints_3d_vis[ipt, 1] = t_vis
@@ -177,6 +182,7 @@ class CrowdPoseDataset(JointsDataset):
                 'scale': scale,
                 'joints_3d': joints_3d,
                 'joints_3d_vis': joints_3d_vis,
+                'joints_3d_vis_full':joints_3d_vis_full,
                 'filename': '',
                 'imgnum': 0,
             })

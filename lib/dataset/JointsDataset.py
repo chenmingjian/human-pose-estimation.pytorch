@@ -86,7 +86,8 @@ class JointsDataset(Dataset):
 
         joints = db_rec['joints_3d']
         joints_vis = db_rec['joints_3d_vis']
-
+        if self.use_branch:
+            joints_vis_full = db_rec['joints_3d_vis_full']
         c = db_rec['center']
         s = db_rec['scale']
         score = db_rec['score'] if 'score' in db_rec else 1
@@ -102,7 +103,8 @@ class JointsDataset(Dataset):
             if self.flip and random.random() <= 0.5:
                 data_numpy = data_numpy[:, ::-1, :]
                 joints, joints_vis = fliplr_joints(
-                    joints, joints_vis, data_numpy.shape[1], self.flip_pairs)
+                    joints, joints_vis, data_numpy.shape[1], self.flip_pairs, 
+                    joints_vis_full if self.use_branch else None)
                 c[0] = data_numpy.shape[1] - c[0] - 1
 
         trans = get_affine_transform(c, s, r, self.image_size)
@@ -120,7 +122,8 @@ class JointsDataset(Dataset):
             if joints_vis[i, 0] > 0.0:
                 joints[i, 0:2] = affine_transform(joints[i, 0:2], trans)
 
-        target, target_weight = self.generate_target(joints, joints_vis)
+
+        target, target_weight = self.generate_target(joints, joints_vis_full if self.use_branch else joints_vis)
         if DEBUG_THIS_CONTEXT:
             heatmap1 = np.sum(target[:14], axis=0) * 255
             heatmap2 = np.sum(target[14:], axis=0) * 255
