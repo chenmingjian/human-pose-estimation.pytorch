@@ -108,12 +108,15 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
         end = time.time()
         for i, (input, target, target_weight, meta) in enumerate(val_loader):
             # compute output
+            input = input.to(f'cuda:{model.device_ids[0]}')
+
             output = model(input)
             if config.TEST.FLIP_TEST:
                 # this part is ugly, because pytorch has not supported negative index
                 # input_flipped = model(input[:, :, :, ::-1])
                 input_flipped = np.flip(input.cpu().numpy(), 3).copy()
                 input_flipped = torch.from_numpy(input_flipped).cuda()
+                input_flipped = input_flipped.to(f'cuda:{model.device_ids[0]}')
                 output_flipped = model(input_flipped)
                 output_flipped = flip_back(output_flipped.cpu().numpy(),
                                            val_dataset.flip_pairs)
@@ -129,7 +132,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
 
             target = target.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
             target_weight = target_weight.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
-            
+
             loss = criterion(output, target, target_weight)
 
             num_images = input.size(0)
@@ -149,8 +152,8 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             score = meta['score'].numpy()
 
             if config.MODEL.USE_BRANCH:
-                output = output[:, :config.MODEL.NUM_JOINTS, 0:2] + \
-                         output[:, config.MODEL.NUM_JOINTS:, 0:2]
+                output = output[:, :config.MODEL.NUM_JOINTS] + \
+                         output[:, config.MODEL.NUM_JOINTS:]
             preds, maxvals = get_final_preds(
                 config, output.clone().cpu().numpy(), c, s)
 

@@ -129,6 +129,7 @@ def main():
 
     gpus = [int(i) for i in config.GPUS.split(',')]
     model = torch.nn.DataParallel(model, device_ids=gpus).cuda()
+    model.to(f'cuda:{model.device_ids[0]}')
 
     # define loss function (criterion) and optimizer
     criterion = JointsMSELoss(
@@ -146,7 +147,8 @@ def main():
         transforms.Compose([
             transforms.ToTensor(),
             normalize,
-        ])
+        ]),
+        config.MODEL.USE_BRANCH
     )
     valid_loader = torch.utils.data.DataLoader(
         valid_dataset,

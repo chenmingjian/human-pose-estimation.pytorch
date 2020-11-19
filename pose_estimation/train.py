@@ -197,11 +197,11 @@ def main():
             'optimizer': optimizer.state_dict(),
         }, best_model, final_output_dir)
 
-    final_model_state_file = os.path.join(final_output_dir,
-                                          'final_state.pth.tar')
-    logger.info('saving final model state to {}'.format(
-        final_model_state_file))
-    torch.save(model.module.state_dict(), final_model_state_file)
+        final_model_state_file = os.path.join(final_output_dir,
+                                            'final_state.pth.tar')
+        logger.info('saving final model state to {}'.format(
+            final_model_state_file))
+        torch.save(model.module.state_dict(), final_model_state_file)
     writer_dict['writer'].close()
 
 
