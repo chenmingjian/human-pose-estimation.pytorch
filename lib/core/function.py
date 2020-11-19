@@ -41,9 +41,10 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         data_time.update(time.time() - end)
 
         # compute output
+        input = input.to(f'cuda:{model.device_ids[0]}')
         output = model(input)
-        target = target.cuda(non_blocking=True)
-        target_weight = target_weight.cuda(non_blocking=True)
+        target = target.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
+        target_weight = target_weight.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
 
         loss = criterion(output, target, target_weight)
 
