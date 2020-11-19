@@ -137,7 +137,7 @@ def main():
             transforms.ToTensor(),
             normalize,
             ]),
-        True
+        config.MODEL.USE_BRANCH
     )
     valid_dataset = eval('dataset.'+config.DATASET.DATASET)(
         config,

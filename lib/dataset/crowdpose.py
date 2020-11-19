@@ -45,8 +45,8 @@ class CrowdPoseDataset(JointsDataset):
         13'neck'],
 	'skeleton': [[16, 14], [14, 12], [17, 15], [15, 13], [12, 13], [6, 12], [7, 13], [6, 7], [6, 8], [7, 9], [8, 10], [9, 11]]
     '''
-    def __init__(self, cfg, root, image_set, is_train, transform=None, use_brance=False):
-        super().__init__(cfg, root, image_set, is_train, transform, use_brance)
+    def __init__(self, cfg, root, image_set, is_train, transform=None, use_branch=False):
+        super().__init__(cfg, root, image_set, is_train, transform, use_branch)
         self.nms_thre = cfg.TEST.NMS_THRE
         self.image_thre = cfg.TEST.IMAGE_THRE
         self.oks_thre = cfg.TEST.OKS_THRE
@@ -81,7 +81,7 @@ class CrowdPoseDataset(JointsDataset):
         self.parent_ids = None
 
         self.db = self._get_db()
-        self.use_branch = use_brance
+        self.use_branch = use_branch
 
         if is_train and cfg.DATASET.SELECT_DATA:
             self.db = self.select_data(self.db)

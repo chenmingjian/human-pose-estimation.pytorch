@@ -1,0 +1,34 @@
+# 改动日志
+1. 下载数据集，探索数据集。
+2. 阅读文章，查看文章源码。
+    - Peeking 代码没放出来。论文中提出的数据集也没有消息。但文章提到基于alphapose+。  
+	- crowdPose代码集成于了alphapose，但并未找到训练痕迹。
+3. 探索alphapose
+	- alphapose出现文档和实际代码文件不匹配。
+	- 没提供crowdpose的训练好的模型。
+		- 推测目前默认使用的是crowdpose的方法。
+		- 证明目前默认的alphapose使用crowedpose。
+		    - 并不是，翻看issue中提到，crowdpose并没有真正合并到master分支。
+4. 补看alphapose的文章。
+5. 重新下载alphapose的pytorch分支以防出错，重新配置alphapose环境以防出错。
+	- 代码要求的pytorch0.4.0配置后无法使用，使用gpu时会卡住，疑似不兼容新硬件。
+	- 使用pytorch1.1.0作为环境。2020-11-15 11:41:28
+6. 目前情况是，没有crowdpose的模型，缺少crowdpose的部分代码。
+	- alphapose的pytorch分支的duc模型是什么网络？
+	- 如果改可能需要添加
+		- 数据集加载代码
+		- 可视化代码
+		- 验证代码
+7. 从simplebaseline开始改。
+	- 数据集的适配，crowdpose ap 65.4。结果与crowdpose文章中所报不符，可能是由于使用了gt_box。
+	- 改成双分支文章形式。
+		- 可以训练。
+			- 训练有错，初始loss低、检验AP为0。2020-11-19 09:01:27
+			- 可视化gt部分，无错误。2020-11-19 09:02:23
+            - 验证是否是USE_TARGET_WEIGHT影响了训练结果。2020-11-19 09:31:41
+				- 并不是。
+			- normalize的参数与数据集不匹配？2020-11-19 09:36:04
+		- 结果。
+	- 改成基于不同分辨率特征的双分支形式。
+	- 改成基于特种融合的双分支形式。
+	- 改成齿距特征融合的单分支形式。

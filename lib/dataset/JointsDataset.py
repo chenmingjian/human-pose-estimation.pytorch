@@ -21,6 +21,9 @@ from utils.transforms import get_affine_transform
 from utils.transforms import affine_transform
 from utils.transforms import fliplr_joints
 
+DEBUG_THIS_CONTEXT=False
+if DEBUG_THIS_CONTEXT:
+    import cv2
 
 logger = logging.getLogger(__name__)
 
@@ -108,7 +111,8 @@ class JointsDataset(Dataset):
             trans,
             (int(self.image_size[0]), int(self.image_size[1])),
             flags=cv2.INTER_LINEAR)
-
+        if DEBUG_THIS_CONTEXT:
+            input_before_transform = input
         if self.transform:
             input = self.transform(input)
 
@@ -117,7 +121,21 @@ class JointsDataset(Dataset):
                 joints[i, 0:2] = affine_transform(joints[i, 0:2], trans)
 
         target, target_weight = self.generate_target(joints, joints_vis)
-
+        if DEBUG_THIS_CONTEXT:
+            heatmap1 = np.sum(target[:14], axis=0) * 255
+            heatmap2 = np.sum(target[14:], axis=0) * 255
+            intput_shape = (input_before_transform.shape[1], input_before_transform.shape[0])
+            heatmap1 = cv2.resize(heatmap1, intput_shape)
+            heatmap1 = np.expand_dims(heatmap1, -1) 
+            heatmap1 = np.repeat(heatmap1, 3, axis=-1)
+            heatmap2 = cv2.resize(heatmap2, intput_shape)
+            heatmap2 = np.expand_dims(heatmap2, -1)
+            heatmap2 = np.repeat(heatmap2, 3, axis=-1)
+            
+            img1 = cv2.addWeighted(input_before_transform, 0.5, heatmap1.astype(np.uint8), 0.5, 0)
+            img2 = cv2.addWeighted(input_before_transform, 0.5, heatmap2.astype(np.uint8), 0.5, 0)
+            cv2.imwrite("1.jpg", img1)
+            cv2.imwrite("2.jpg", img2)
         target = torch.from_numpy(target)
         target_weight = torch.from_numpy(target_weight)
 
@@ -181,7 +199,7 @@ class JointsDataset(Dataset):
             'Only support gaussian map now!'
 
         if self.target_type == 'gaussian':
-            target = np.zeros((self.num_joints * (2 if self.use_branch else 2),
+            target = np.zeros((self.num_joints * (2 if self.use_branch else 1),
                                self.heatmap_size[1],
                                self.heatmap_size[0]),
                               dtype=np.float32)
