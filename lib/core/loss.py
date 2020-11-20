@@ -9,6 +9,7 @@ from __future__ import division
 from __future__ import print_function
 
 import torch.nn as nn
+import torch
 
 
 class JointsMSELoss(nn.Module):
@@ -23,7 +24,9 @@ class JointsMSELoss(nn.Module):
         heatmaps_pred = output.reshape((batch_size, num_joints, -1)).split(1, 1)
         heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
         loss = 0
-
+        if num_joints != len(target_weight):
+            assert num_joints == target_weight.size(1) * 2, "some thing unexpect hapen."
+            target_weight = torch.cat([target_weight, target_weight], 1)
         for idx in range(num_joints):
             heatmap_pred = heatmaps_pred[idx].squeeze()
             heatmap_gt = heatmaps_gt[idx].squeeze()

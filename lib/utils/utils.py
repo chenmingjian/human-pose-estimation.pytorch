@@ -81,3 +81,7 @@ def save_checkpoint(states, is_best, output_dir,
     if is_best and 'state_dict' in states:
         torch.save(states['state_dict'],
                    os.path.join(output_dir, 'model_best.pth.tar'))
+    if is_best and 'module.state_dict' in states:
+        torch.save(states['module.state_dict'],
+                   os.path.join(output_dir, 'model_best_final.pth.tar'))
+                   

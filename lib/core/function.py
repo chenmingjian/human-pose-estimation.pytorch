@@ -12,6 +12,7 @@ import logging
 import time
 import os
 
+import cv2
 import numpy as np
 import torch
 
@@ -45,7 +46,7 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         output = model(input)
         target = target.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
         target_weight = target_weight.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
-
+        criterion
         loss = criterion(output, target, target_weight)
 
         # compute gradient and do update step
@@ -151,13 +152,19 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
             s = meta['scale'].numpy()
             score = meta['score'].numpy()
 
+            output_np = output.clone().cpu().numpy()
             if config.MODEL.USE_BRANCH:
-                output = output[:, :config.MODEL.NUM_JOINTS] + \
-                         output[:, config.MODEL.NUM_JOINTS:]
-            preds, maxvals = get_final_preds(
-                config, output.clone().cpu().numpy(), c, s)
-
-            all_preds[idx:idx + num_images, :, 0:2] = preds[:, :, 0:2]
+                half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
+                output_np_tmp = np.zeros(half_shpae)
+                for i_output in range(output_np_tmp.shape[0]):
+                    output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                    output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                    for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
+                        output_np_tmp[i_output, j] = v if np.max(v) > np.max(uv) else uv
+                output_np = output_np_tmp
+            preds, maxvals, pred= get_final_preds(
+                config, output_np, c, s)
+            all_preds[idx:idx + num_images, :, 0:2] = preds
             all_preds[idx:idx + num_images, :, 2:3] = maxvals
             # double check this all_boxes parts
             all_boxes[idx:idx + num_images, 0:2] = c[:, 0:2]
@@ -181,8 +188,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                 logger.info(msg)
 
                 prefix = '{}_{}'.format(os.path.join(output_dir, 'val'), i)
-                save_debug_images(config, input, meta, target, pred*4, output,
-                                  prefix)
+                save_debug_images(config, input, meta, target, pred*4, output, prefix, torch.from_numpy(output_np))
 
         name_values, perf_indicator = val_dataset.evaluate(
             config, all_preds, output_dir, all_boxes, image_path,

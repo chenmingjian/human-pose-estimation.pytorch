@@ -65,7 +65,7 @@ def accuracy(output, target, hm_type='gaussian', thr=0.5):
             avg_acc = avg_acc + acc[i + 1]
             cnt += 1
 
-    avg_acc = avg_acc / cnt if cnt != 0 else 0
+    avg_acc = avg_acc / cnt if cnt != 0 else 0 
     if cnt != 0:
         acc[0] = avg_acc
     return acc, avg_acc, cnt, pred
