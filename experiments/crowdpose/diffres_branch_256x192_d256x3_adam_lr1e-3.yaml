@@ -60,7 +60,7 @@ TRAIN:
   NESTEROV: false
 TEST:
   BATCH_SIZE: 32
-  COCO_BBOX_FILE: 'data/crowdpose/person_detection_results/val_bbox.json'
+  COCO_BBOX_FILE: 'data/crowdpose/person_detection_result/test_box.json'
   BBOX_THRE: 1.0
   FLIP_TEST: false
   IMAGE_THRE: 0.0

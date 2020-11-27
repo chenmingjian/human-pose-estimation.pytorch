@@ -46,7 +46,6 @@ def train(config, train_loader, model, criterion, optimizer, epoch,
         output = model(input)
         target = target.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
         target_weight = target_weight.cuda(non_blocking=True).to(f'cuda:{model.device_ids[0]}')
-        criterion
         loss = criterion(output, target, target_weight)
 
         # compute gradient and do update step
@@ -116,12 +115,11 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                 # this part is ugly, because pytorch has not supported negative index
                 # input_flipped = model(input[:, :, :, ::-1])
                 input_flipped = np.flip(input.cpu().numpy(), 3).copy()
-                input_flipped = torch.from_numpy(input_flipped).cuda()
-                input_flipped = input_flipped.to(f'cuda:{model.device_ids[0]}')
+                input_flipped = torch.from_numpy(input_flipped).cuda(model.device_ids[0])
                 output_flipped = model(input_flipped)
                 output_flipped = flip_back(output_flipped.cpu().numpy(),
                                            val_dataset.flip_pairs)
-                output_flipped = torch.from_numpy(output_flipped.copy()).cuda()
+                output_flipped = torch.from_numpy(output_flipped.copy()).cuda(model.device_ids[0])
 
                 # feature is not aligned, shift flipped heatmap for higher accuracy
                 if config.TEST.SHIFT_HEATMAP:

@@ -246,8 +246,8 @@ class CrowdPoseDataset(JointsDataset):
 
             center, scale = self._box2cs(box)
             joints_3d = np.zeros((self.num_joints, 3), dtype=np.float)
-            joints_3d_vis = np.ones(
-                (self.num_joints, 3), dtype=np.float)
+            joints_3d_vis = np.ones((self.num_joints, 3), dtype=np.float)
+            joints_3d_vis_full = np.ones((self.num_joints, 3), dtype=np.float)
             kpt_db.append({
                 'image': img_name,
                 'center': center,
@@ -255,6 +255,7 @@ class CrowdPoseDataset(JointsDataset):
                 'score': score,
                 'joints_3d': joints_3d,
                 'joints_3d_vis': joints_3d_vis,
+                'joints_3d_vis_full': joints_3d_vis_full
             })
 
         logger.info('=> Total boxes after fliter low score@{}: {}'.format(
@@ -315,7 +316,8 @@ class CrowdPoseDataset(JointsDataset):
 
         self._write_coco_keypoint_results(
             oks_nmsed_kpts, res_file)
-        if 'test' not in self.image_set:
+        # if 'test' not in self.image_set:
+        if True:
             info_str = self._do_python_keypoint_eval(
                 res_file, res_folder)
             name_value = OrderedDict(info_str)

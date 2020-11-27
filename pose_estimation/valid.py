@@ -123,7 +123,8 @@ def main():
         model.load_state_dict(torch.load(config.TEST.MODEL_FILE))
     else:
         model_state_file = os.path.join(final_output_dir,
-                                        'final_state.pth.tar')
+                                        'model_best_final.pth.tar')
+                                        # 'final_state.pth.tar')
         logger.info('=> loading model from {}'.format(model_state_file))
         model.load_state_dict(torch.load(model_state_file))
 

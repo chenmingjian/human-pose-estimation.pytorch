@@ -10,3 +10,5 @@ from __future__ import print_function
 
 import models.pose_resnet
 import models.pose_resnet_diff_resolution_branch
+import models.pose_resnet_diff_resolution_branch_dc
+import models.OccNetCB

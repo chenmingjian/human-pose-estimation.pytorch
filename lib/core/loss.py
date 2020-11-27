@@ -21,21 +21,24 @@ class JointsMSELoss(nn.Module):
     def forward(self, output, target, target_weight):
         batch_size = output.size(0)
         num_joints = output.size(1)
+        w, h = output.size(2), output.size(3)
         heatmaps_pred = output.reshape((batch_size, num_joints, -1)).split(1, 1)
         heatmaps_gt = target.reshape((batch_size, num_joints, -1)).split(1, 1)
         loss = 0
-        if num_joints != len(target_weight):
-            assert num_joints == target_weight.size(1) * 2, "some thing unexpect hapen."
-            target_weight = torch.cat([target_weight, target_weight], 1)
+        num_joints_real = target_weight.size(1)
+        if num_joints != num_joints_real:
+            assert num_joints == num_joints_real * 2, "some thing unexpect hapen."
+
         for idx in range(num_joints):
+            weight = 1 if idx < num_joints_real else 1.5
             heatmap_pred = heatmaps_pred[idx].squeeze()
             heatmap_gt = heatmaps_gt[idx].squeeze()
             if self.use_target_weight:
                 loss += 0.5 * self.criterion(
-                    heatmap_pred.mul(target_weight[:, idx]),
-                    heatmap_gt.mul(target_weight[:, idx])
-                )
+                    heatmap_pred.mul(target_weight[:, idx%num_joints_real]),
+                    heatmap_gt.mul(target_weight[:, idx%num_joints_real])
+                ) * weight
             else:
-                loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt)
+                loss += 0.5 * self.criterion(heatmap_pred, heatmap_gt) * weight
 
         return loss / num_joints

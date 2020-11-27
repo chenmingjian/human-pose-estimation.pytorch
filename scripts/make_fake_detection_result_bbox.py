@@ -1,6 +1,6 @@
 import json 
 
-j = json.load(open("./data/crowdpose/annotations/crowdpose_val.json"))
+j = json.load(open("./data/crowdpose/annotations/crowdpose_test.json"))
 
 d = []
 
@@ -20,4 +20,5 @@ for i in j['annotations']:
     d.append(t)
 
 
-json.dump(d, open("./data/crowdpose/person_detection_result/val_box.json", 'w'))
+# json.dump(d, open("./data/crowdpose/person_detection_result/val_box.json", 'w'))
+json.dump(d, open("./data/crowdpose/person_detection_result/test_box.json", 'w'))
