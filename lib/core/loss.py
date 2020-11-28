@@ -30,7 +30,7 @@ class JointsMSELoss(nn.Module):
             assert num_joints == num_joints_real * 2, "some thing unexpect hapen."
 
         for idx in range(num_joints):
-            weight = 1 if idx < num_joints_real else 1.5
+            weight = 1 if idx < num_joints_real else 1
             heatmap_pred = heatmaps_pred[idx].squeeze()
             heatmap_gt = heatmaps_gt[idx].squeeze()
             if self.use_target_weight:

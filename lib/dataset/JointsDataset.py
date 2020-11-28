@@ -50,6 +50,7 @@ class JointsDataset(Dataset):
         self.target_type = cfg.MODEL.EXTRA.TARGET_TYPE
         self.heatmap_size = cfg.MODEL.EXTRA.HEATMAP_SIZE
         self.sigma = cfg.MODEL.EXTRA.SIGMA
+        self.vis_and_all = cfg.MODEL.VIS_AND_ALL
 
         self.transform = transform
         self.db = []
@@ -235,6 +236,9 @@ class JointsDataset(Dataset):
                 if v == 2 or (not self.use_branch and v > 0.5):
                     target[joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
                         g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
+                    if self.use_branch and self.vis_and_all:
+                        target[self.num_joints + joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
+                            g[g_y[0]:g_y[1], g_x[0]:g_x[1]]                        
                 elif v == 1:
                     target[self.num_joints + joint_id][img_y[0]:img_y[1], img_x[0]:img_x[1]] = \
                         g[g_y[0]:g_y[1], g_x[0]:g_x[1]]
