@@ -13,3 +13,4 @@ import models.pose_resnet_diff_resolution_branch
 import models.pose_resnet_diff_resolution_branch_dc
 import models.OccNetCB
 import models.pose_resnet_del_unvis
+import models.pose_resnet_del_unvis_1x1

@@ -166,9 +166,6 @@ class PoseResNet(nn.Module):
             extra.NUM_DECONV_KERNELS,
         )
         self.inplanes += cfg.MODEL.NUM_JOINTS
-        self.del_unvis_layers = self._make_layer(block,
-            planes=self.inplanes//4, blocks=1
-        )
         self.final_layer_0 = nn.Conv2d(
             in_channels=self.inplanes,
             out_channels=cfg.MODEL.NUM_JOINTS,
@@ -256,7 +253,6 @@ class PoseResNet(nn.Module):
 
         heatmap_all = self.final_layer_1(x)
         x = torch.cat([heatmap_all, x], 1)
-        x = self.del_unvis_layers(x)
         heatmap_del_unvis = self.final_layer_0(x)
         y = torch.cat([heatmap_del_unvis, heatmap_all], 1)
         return y
