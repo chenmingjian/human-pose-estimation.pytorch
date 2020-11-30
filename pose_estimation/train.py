@@ -169,7 +169,18 @@ def main():
 
     best_perf = 0.0
     best_model = False
-    for epoch in range(config.TRAIN.BEGIN_EPOCH, config.TRAIN.END_EPOCH):
+
+    begin_epoch = config.TRAIN.BEGIN_EPOCH
+    if config.TRAIN.RESUME:
+        checkpoint_path = os.path.join(final_output_dir, "checkpoint.pth.tar")
+        checkpoint = torch.load(checkpoint_path)
+        begin_epoch = checkpoint['epoch']
+        perf_indicator =  checkpoint['perf']
+        model.load_state_dict(checkpoint['state_dict'])
+        model.module.load_state_dict(checkpoint['module.state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer'])
+
+    for epoch in range(begin_epoch, config.TRAIN.END_EPOCH):
         lr_scheduler.step()
 
         # train for one epoch
