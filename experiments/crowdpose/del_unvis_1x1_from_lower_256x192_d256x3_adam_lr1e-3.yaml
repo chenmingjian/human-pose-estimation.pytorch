@@ -1,4 +1,4 @@
-GPUS: '2,3'
+GPUS: '0,3'
 DATA_DIR: ''
 OUTPUT_DIR: 'output'
 LOG_DIR: 'log'
@@ -14,7 +14,7 @@ DATASET:
   ROT_FACTOR: 40
   SCALE_FACTOR: 0.3
 MODEL:
-  NAME: 'pose_resnet_del_unvis'
+  NAME: 'pose_resnet_del_unvis_1x1_from_lower'
   PRETRAINED: 'models/pytorch/imagenet/resnet50-19c8e357.pth'
   IMAGE_SIZE:
   - 192
@@ -22,7 +22,6 @@ MODEL:
   NUM_JOINTS: 14
   USE_BRANCH: true
   VIS_AND_ALL: true
-  BRANCH_MERGE_STRATEGY: 'all'
   EXTRA:
     TARGET_TYPE: 'gaussian'
     HEATMAP_SIZE:

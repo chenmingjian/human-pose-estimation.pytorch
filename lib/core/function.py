@@ -152,14 +152,27 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
 
             output_np = output.clone().cpu().numpy()
             if config.MODEL.USE_BRANCH:
-                half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
-                output_np_tmp = np.zeros(half_shpae)
-                for i_output in range(output_np_tmp.shape[0]):
-                    output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
-                    output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
-                    for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
-                        output_np_tmp[i_output, j] = v if np.max(v) > np.max(uv) else uv
-                output_np = output_np_tmp
+                if config.MODEL.BRANCH_MERGE_STRATEGY == "max":
+                    half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
+                    output_np_tmp = np.zeros(half_shpae)
+                    for i_output in range(output_np_tmp.shape[0]):
+                        output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                        output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                        for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
+                            output_np_tmp[i_output, j] = v if np.max(v) > np.max(uv) else uv
+                    output_np = output_np_tmp
+                elif config.MODEL.BRANCH_MERGE_STRATEGY == "all":
+                    output_np = output_np[:, config.MODEL.NUM_JOINTS:]
+                elif config.MODEL.BRANCH_MERGE_STRATEGY == "mix_vis_all":
+                    half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
+                    output_np_tmp = np.zeros(half_shpae)
+                    for i_output in range(output_np_tmp.shape[0]):
+                        output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                        output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                        for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
+                            output_np_tmp[i_output, j] = v if np.max(v) > 0.2 else uv 
+                elif config.MODEL.BRANCH_MERGE_STRATEGY == "vis":
+                    output_np = output_np[:, :config.MODEL.NUM_JOINTS]
             preds, maxvals, pred= get_final_preds(
                 config, output_np, c, s)
             all_preds[idx:idx + num_images, :, 0:2] = preds

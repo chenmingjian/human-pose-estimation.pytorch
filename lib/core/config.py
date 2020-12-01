@@ -54,6 +54,7 @@ config.MODEL.PRETRAINED = ''
 config.MODEL.NUM_JOINTS = 16
 config.MODEL.USE_BRANCH = False
 config.MODEL.VIS_AND_ALL = False
+config.MODEL.BRANCH_MERGE_STRATEGY = 'max'
 config.MODEL.IMAGE_SIZE = [256, 256]  # width * height, ex: 192 * 256
 config.MODEL.EXTRA = MODEL_EXTRAS[config.MODEL.NAME]
 
