@@ -1,4 +1,4 @@
-GPUS: '2,3'
+GPUS: '0,1'
 DATA_DIR: ''
 OUTPUT_DIR: 'output'
 LOG_DIR: 'log'
@@ -8,7 +8,7 @@ PRINT_FREQ: 100
 DATASET:
   DATASET: 'crowdpose'
   ROOT: 'data/crowdpose/'
-  TEST_SET: 'val'
+  TEST_SET: 'test'
   TRAIN_SET: 'train'
   FLIP: true
   ROT_FACTOR: 40
@@ -22,6 +22,7 @@ MODEL:
   NUM_JOINTS: 14
   USE_BRANCH: true
   VIS_AND_ALL: true
+  BRANCH_MERGE_STRATEGY: 'mix_vis_all'
   EXTRA:
     TARGET_TYPE: 'gaussian'
     HEATMAP_SIZE:
@@ -69,7 +70,7 @@ TEST:
   MODEL_FILE: ''
   NMS_THRE: 1.0
   OKS_THRE: 0.9
-  USE_GT_BBOX: true
+  USE_GT_BBOX: false
 DEBUG:
   DEBUG: true
   SAVE_BATCH_IMAGES_GT: true

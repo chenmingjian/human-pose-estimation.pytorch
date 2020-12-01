@@ -171,6 +171,7 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                         output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
                         for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
                             output_np_tmp[i_output, j] = v if np.max(v) > 0.2 else uv 
+                    output_np = output_np_tmp
                 elif config.MODEL.BRANCH_MERGE_STRATEGY == "vis":
                     output_np = output_np[:, :config.MODEL.NUM_JOINTS]
             preds, maxvals, pred= get_final_preds(
