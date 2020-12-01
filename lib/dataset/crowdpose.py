@@ -57,7 +57,7 @@ class CrowdPoseDataset(JointsDataset):
         self.image_height = cfg.MODEL.IMAGE_SIZE[1]
         self.aspect_ratio = self.image_width * 1.0 / self.image_height
         self.pixel_std = 200
-        self.coco = COCO(self._get_ann_file_keypoint())
+        self.coco = COCO(self._get_ann_file_keypoint(cfg))
 
         # deal with class names
         cats = [cat['name']
@@ -88,11 +88,15 @@ class CrowdPoseDataset(JointsDataset):
 
         logger.info('=> load {} samples'.format(len(self.db)))
 
-    def _get_ann_file_keypoint(self):
+    def _get_ann_file_keypoint(self,cfg=None):
         """ self.root / annotations / person_keypoints_train2017.json """
         prefix = 'crowdpose'
+        tail = ''
+        if cfg and cfg.MODEL.BRANCH_MERGE_STRATEGY == "vis":
+            tail = "_vis"
         return os.path.join(self.root, 'annotations',
-                            prefix + '_' + self.image_set + '.json')
+                            prefix + '_' + self.image_set + tail + '.json')
+
 
     def _load_image_set_index(self):
         """ image id: int """
