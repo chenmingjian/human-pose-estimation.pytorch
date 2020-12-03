@@ -22,7 +22,7 @@ MODEL:
   NUM_JOINTS: 14
   USE_BRANCH: true
   VIS_AND_ALL: true
-  BRANCH_MERGE_STRATEGY: 'mix_vis_all'
+  BRANCH_MERGE_STRATEGY: 'vis'
   EXTRA:
     TARGET_TYPE: 'gaussian'
     HEATMAP_SIZE:

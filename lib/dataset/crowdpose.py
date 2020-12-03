@@ -92,7 +92,7 @@ class CrowdPoseDataset(JointsDataset):
         """ self.root / annotations / person_keypoints_train2017.json """
         prefix = 'crowdpose'
         tail = ''
-        if cfg and cfg.MODEL.BRANCH_MERGE_STRATEGY == "vis":
+        if cfg and cfg.MODEL.BRANCH_MERGE_STRATEGY in {"vis", "vis_in_all"}:
             tail = "_vis"
         return os.path.join(self.root, 'annotations',
                             prefix + '_' + self.image_set + tail + '.json')

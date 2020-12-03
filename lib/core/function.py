@@ -156,9 +156,9 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                     half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
                     output_np_tmp = np.zeros(half_shpae)
                     for i_output in range(output_np_tmp.shape[0]):
-                        output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
-                        output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
-                        for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
+                        output_0 = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                        output_1 = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                        for j, (v, uv) in enumerate(zip(output_0, output_1)):
                             output_np_tmp[i_output, j] = v if np.max(v) > np.max(uv) else uv
                     output_np = output_np_tmp
                 elif config.MODEL.BRANCH_MERGE_STRATEGY == "all":
@@ -167,13 +167,24 @@ def validate(config, val_loader, val_dataset, model, criterion, output_dir,
                     half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
                     output_np_tmp = np.zeros(half_shpae)
                     for i_output in range(output_np_tmp.shape[0]):
-                        output_vis = output_np[i_output, :config.MODEL.NUM_JOINTS]
-                        output_unvis = output_np[i_output, config.MODEL.NUM_JOINTS:]
-                        for j, (v, uv) in enumerate(zip(output_vis, output_unvis)):
+                        output_0 = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                        output_1 = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                        for j, (v, uv) in enumerate(zip(output_0, output_1)):
                             output_np_tmp[i_output, j] = v if np.max(v) > 0.2 else uv 
                     output_np = output_np_tmp
                 elif config.MODEL.BRANCH_MERGE_STRATEGY == "vis":
                     output_np = output_np[:, :config.MODEL.NUM_JOINTS]
+                elif config.MODEL.BRANCH_MERGE_STRATEGY == "vis_in_all":
+                    half_shpae = tuple(i//2 if i == config.MODEL.NUM_JOINTS*2 else i for i in output_np.shape)
+                    output_np_tmp = np.zeros(half_shpae)
+                    for i_output in range(output_np_tmp.shape[0]):
+                        output_0 = output_np[i_output, :config.MODEL.NUM_JOINTS]
+                        output_1 = output_np[i_output, config.MODEL.NUM_JOINTS:]
+                        for j, (v_heatmap, a_heatmap) in enumerate(zip(output_0, output_1)):
+                            if np.max(v_heatmap) > 0.2:
+                                output_np_tmp[i_output, j] = a_heatmap
+                    output_np = output_np_tmp
+                        
             preds, maxvals, pred= get_final_preds(
                 config, output_np, c, s)
             all_preds[idx:idx + num_images, :, 0:2] = preds
